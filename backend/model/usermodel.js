@@ -20,3 +20,6 @@ const userSchema = new mongoose.Schema({
     enum: ['Admin', 'Editor', 'Viewer']
    }
 })
+
+const User = mongoose.model('User', userSchema);
+export default User;
