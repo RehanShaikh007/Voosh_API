@@ -115,3 +115,25 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const logout = async(req, res, next) => {
+    try {
+        res.cookie('access_token',"", {
+            httpOnly: true,
+            expires: new Date(Date.now()),
+        });
+
+        res.status(200).json({
+            message: 'User logged out successfully!',
+            success: true
+        })
+
+    } catch (error) {
+        next(error);
+        return res.status(400).json({
+            message: 'Bad Request',
+            success: false
+        })
+    }
+}
