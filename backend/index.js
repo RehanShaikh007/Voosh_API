@@ -2,7 +2,8 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
-import userRoute from './routes/userRoutes.js'
+import userRoute from './routes/userRoutes.js';
+import adminRoute from './routes/adminRoutes.js';
 
 dotenv.config();
 
@@ -31,3 +32,4 @@ app.listen(PORT, () => {
 
 
 app.use('/api/v1', userRoute);
+app.use('/api/v1/users', adminRoute);
