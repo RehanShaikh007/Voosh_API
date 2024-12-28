@@ -2,7 +2,7 @@
 
 export const verifyEditor = (req, res, next) => {
     
-    if(req.user && req.user.role == "Editor" || "Admin" ){
+    if (req.user && (req.user.role === "Editor" || req.user.role === "Admin")) {
         next();
     } else {
         return res.status(404).json({

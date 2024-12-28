@@ -100,3 +100,87 @@ export const getArtistById = async(req, res, next) => {
     
    }
 }
+
+
+export const updateArtist = async(req, res, next) => {
+   const {id} = req.params;
+   const {name, grammy, hidden} = req.body;
+
+   if (!name && grammy === undefined && hidden === undefined) {
+    return res.status(400).json({
+      status: 400,
+      data: null,
+      message: "Bad Request: No fields provided to update",
+      error: null,
+    });
+  }
+
+  try {
+    const artist = await Artist.findOne({ artist_id: id });
+
+    if (!artist) {
+      return res.status(404).json({
+        status: 404,
+        data: null,
+        message: "Artist not found.",
+        error: null,
+      });
+    }
+
+    if (name) artist.name = name;
+    if (grammy !== undefined) artist.grammy = grammy;
+    if (hidden !== undefined) artist.hidden = hidden;
+
+    await artist.save();
+
+    return res.status(204).json({
+      status: 204,
+      data: null,
+      message: "Artist updated successfully.",
+      error: null,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+
+}
+
+export const deleteArtist = async(req, res, next) => {
+   const {id} = req.params;
+
+   try {
+
+    const artist = await Artist.findOne({ artist_id: id });
+
+    if (!artist) {
+      return res.status(404).json({
+        status: 404,
+        data: null,
+        message: "Artist not found",
+        error: null,
+      });
+    }
+
+    await Artist.deleteOne({ artist_id: id });
+
+
+    return res.status(200).json({
+      status: 200,
+      data: {
+        artist_id: artist.artist_id,
+      },
+      message: `Artist: ${artist.name} deleted successfully.`,
+      error: null,
+    });
+    
+   } catch (error) {
+      next(error);
+      return res.status(400).json({
+        status: 400,
+        data: null,
+        message: "Bad Request",
+        error: null,
+      });
+   }
+}
