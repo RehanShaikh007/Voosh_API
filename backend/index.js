@@ -2,6 +2,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
+import userRoute from './routes/userRoutes.js'
 
 dotenv.config();
 
@@ -18,11 +19,15 @@ mongoose
 const app = express();
 
 app.use(express.json());
-app.use(cookieParser);
+app.use(cookieParser());
 
-const PORT = process.env.PORT;
+
+const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
     console.log(`Server Running on Port ${PORT}`);
     
 })
+
+
+app.use('/api/v1', userRoute);
