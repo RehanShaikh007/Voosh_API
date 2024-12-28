@@ -4,6 +4,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import userRoute from './routes/userRoutes.js';
 import adminRoute from './routes/adminRoutes.js';
+import artistRoute from './routes/artistRoutes.js';
 
 dotenv.config();
 
@@ -33,3 +34,4 @@ app.listen(PORT, () => {
 
 app.use('/api/v1', userRoute);
 app.use('/api/v1/users', adminRoute);
+app.use('/api/v1/artists', artistRoute);

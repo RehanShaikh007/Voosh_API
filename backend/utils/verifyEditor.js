@@ -1,9 +1,15 @@
-import { errorHandler } from "./error.js";
+
 
 export const verifyEditor = (req, res, next) => {
-    if(req.user && req.user.role == 'Editor'){
+    
+    if(req.user && req.user.role == "Editor" || "Admin" ){
         next();
     } else {
-        return next(errorHandler(404, 'Editor Access Required!'));
+        return res.status(404).json({
+            status: 404,
+            data: null,
+            message: "Forbidden Access/Operation not allowed",
+            error: null,
+          });
     }
 }
