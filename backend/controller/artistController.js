@@ -78,7 +78,6 @@ export const getArtistById = async(req, res, next) => {
      
      const artist = await Artist.findOne({ artist_id: id });
 
-
      if (!artist) {
       return res.status(404).json({
         status: 404,
