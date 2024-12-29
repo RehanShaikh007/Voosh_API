@@ -6,6 +6,7 @@ import userRoute from './routes/userRoutes.js';
 import adminRoute from './routes/adminRoutes.js';
 import artistRoute from './routes/artistRoutes.js';
 import albumRoute from './routes/albumRoutes.js';
+import trackRoute from './routes/trackRoutes.js';
 
 dotenv.config();
 
@@ -37,3 +38,4 @@ app.use('/api/v1', userRoute);
 app.use('/api/v1/users', adminRoute);
 app.use('/api/v1/artists', artistRoute);
 app.use('/api/v1/albums', albumRoute);
+app.use('/api/v1/tracks', trackRoute);
