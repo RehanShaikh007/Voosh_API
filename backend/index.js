@@ -25,6 +25,12 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+
+app.get('/', (req, res) => {
+    res.send('Welcome to Voosh Music Library Management API!');
+  });
+  
+
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
