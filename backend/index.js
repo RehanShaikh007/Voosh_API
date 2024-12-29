@@ -7,6 +7,7 @@ import adminRoute from './routes/adminRoutes.js';
 import artistRoute from './routes/artistRoutes.js';
 import albumRoute from './routes/albumRoutes.js';
 import trackRoute from './routes/trackRoutes.js';
+import favoriteRoute from './routes/favoriteRoutes.js';
 
 dotenv.config();
 
@@ -39,3 +40,4 @@ app.use('/api/v1/users', adminRoute);
 app.use('/api/v1/artists', artistRoute);
 app.use('/api/v1/albums', albumRoute);
 app.use('/api/v1/tracks', trackRoute);
+app.use('/api/v1/favorites', favoriteRoute);

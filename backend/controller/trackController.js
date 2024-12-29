@@ -92,22 +92,23 @@ export const allTracks = async (req, res, next) => {
     const tracks = await Track.find(filter)
       .skip(offsetNumber)
       .limit(limitNumber)
-      .populate('artist_id', 'name') 
-      .populate('album_id', 'name');
+      .populate("artist_id", "name")
+      .populate("album_id", "name");
 
-      if (tracks.length === 0) {
-        return res.status(404).json({
-          status: 404,
-          data: null,
-          message: "Resource Doesn't Exist: No tracks found.",
-          error: null,
-        });
-      }
+    if (tracks.length === 0) {
+      return res.status(404).json({
+        status: 404,
+        data: null,
+        message: "Resource Doesn't Exist: No tracks found.",
+        error: null,
+      });
+    }
 
-      const trackDetails = await Promise.all(tracks.map(async (track) => {
+    const trackDetails = await Promise.all(
+      tracks.map(async (track) => {
         const artist = await Artist.findOne({ artist_id: track.artist_id });
         const album = await Album.findOne({ album_id: track.album_id });
-    
+
         return {
           track_id: track.track_id,
           artist_name: artist ? artist.name : "Unknown Artist",
@@ -116,9 +117,8 @@ export const allTracks = async (req, res, next) => {
           duration: track.duration,
           hidden: track.hidden,
         };
-      }));
-    
-    
+      })
+    );
 
     return res.status(200).json({
       status: 200,
@@ -137,55 +137,128 @@ export const allTracks = async (req, res, next) => {
   }
 };
 
+export const getTrackById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
-export const getTrackById = async(req, res, next) => {
-    try {
-        
-        const{id} = req.params;
+    console.log("Track ID received", id);
 
-        console.log('Track ID received', id);
+    const track = await Track.findOne({ track_id: id });
 
-        const track = await Track.findOne({ track_id: id });
-
-        if (!track) {
-          return res.status(404).json({
-            status: 404,
-            data: null,
-            message: "Resource Doesn't Exist", 
-            error: null,
-          });
-        }
-
-        const artist = await Artist.findOne({ artist_id: track.artist_id });
-
-        const album = await Album.findOne({ album_id: track.album_id });
-
-        const response = {
-            track_id: track.track_id,
-            artist_name: artist ? artist.name : "Unknown Artist",
-            album_name: album ? album.name : "Unknown Album",
-            name: track.name,
-            duration: track.duration,
-            hidden: track.hidden,
-          };
-      
-
-    
-        return res.status(200).json({
-          status: 200,
-          data: response,
-          message: "Track retrieved successfully.",
-          error: null,
-        });
-        
-
-    } catch (error) {
-        next(error);
-        return res.status(400).json({
-            status: 400,
-            data: null,
-            message: "Bad Request",
-            error: error.message,
-          });
+    if (!track) {
+      return res.status(404).json({
+        status: 404,
+        data: null,
+        message: "Resource Doesn't Exist",
+        error: null,
+      });
     }
-}
+
+    const artist = await Artist.findOne({ artist_id: track.artist_id });
+
+    const album = await Album.findOne({ album_id: track.album_id });
+
+    const response = {
+      track_id: track.track_id,
+      artist_name: artist ? artist.name : "Unknown Artist",
+      album_name: album ? album.name : "Unknown Album",
+      name: track.name,
+      duration: track.duration,
+      hidden: track.hidden,
+    };
+
+    return res.status(200).json({
+      status: 200,
+      data: response,
+      message: "Track retrieved successfully.",
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+    return res.status(400).json({
+      status: 400,
+      data: null,
+      message: "Bad Request",
+      error: error.message,
+    });
+  }
+};
+
+export const updateTrack = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, duration, hidden } = req.body;
+
+    const track = await Track.findOne({ track_id: id });
+
+    if (!track) {
+      return res.status(404).json({
+        status: 404,
+        data: null,
+        message: "Resource Doesn't Exist",
+        error: null,
+      });
+    }
+
+    if (name) {
+      track.name = name;
+    }
+    if (duration) {
+      track.duration = duration;
+    }
+    if (hidden !== undefined) {
+      track.hidden = hidden;
+    }
+
+    await track.save();
+
+    return res.status(204).json({
+      status: 204,
+      data: null,
+      message: "Track updated successfully.",
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+    return res.status(400).json({
+      status: 400,
+      data: null,
+      message: "Bad Request",
+      error: error.message,
+    });
+  }
+};
+
+export const deleteTrack = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const track = await Track.findOne({ track_id: id });
+
+    if (!track) {
+      return res.status(404).json({
+        status: 404,
+        data: null,
+        message: "Resource Doesn't Exist",
+        error: null,
+      });
+    }
+
+    await Track.deleteOne({ track_id: id });
+
+    return res.status(200).json({
+      status: 200,
+      data: null,
+      message: `Track: ${track.name} deleted successfully.`,
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+    return res.status(400).json({
+      status: 400,
+      data: null,
+      message: "Bad Request",
+      error: error.message,
+    });
+  }
+};
