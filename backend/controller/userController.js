@@ -1,56 +1,54 @@
 import User from "../model/usermodel.js";
 import bcryptjs from "bcryptjs";
-import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
 export const signup = async (req, res, next) => {
-  const { email, password, role } = req.body;
+  const { email, password } = req.body;
 
   try {
     const missingFields = [];
     if (!email) missingFields.push("email");
     if (!password) missingFields.push("password");
-    if (!role) missingFields.push("role");
 
     if (missingFields.length > 0) {
       return res.status(400).json({
+        status: 400,
+        data: null,
         message: `Bad Request. Missing fields: ${missingFields.join(", ")}`,
-        success: false,
+        error: null,
       });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({
-        message: "Invalid Email Format!",
-        success: false,
+        status: 400,
+        data: null,
+        message: "Bad Request. Invalid Email Format!",
+        error: null,
       });
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({
-        message: "Email Already Exists!",
-        success: false,
-      });
-    }
-
-    const validRoles = ["Admin", "Editor", "Viewer"];
-    if (!validRoles.includes(role)) {
-      return res.status(400).json({
-        message: `Invalid role. Allowed roles are: ${validRoles.join(", ")}`,
-        success: false,
+        status: 409,
+        data: null,
+        message: "Email already exists",
+        error: null,
       });
     }
 
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    const newUser = new User({ email, password: hashedPassword, role });
+    const newUser = new User({ email, password: hashedPassword });
 
     await newUser.save();
     res.status(201).json({
-      message: "User created successfully!",
-      success: true,
+      status: 201,
+      data: null,
+      message: "User created successfully.",
+      error: null,
     });
   } catch (error) {
     next(error);
@@ -67,8 +65,10 @@ export const login = async (req, res, next) => {
 
     if (missingFields.length > 0) {
       return res.status(400).json({
+        status: 400,
+        data: null,
         message: `Bad Request. Missing fields: ${missingFields.join(", ")}`,
-        success: false,
+        error: null,
       });
     }
 
@@ -76,8 +76,10 @@ export const login = async (req, res, next) => {
 
     if (!validUser) {
       return res.status(404).json({
-        message: "User not found!",
-        success: false
+        status: 404,
+        data: null,
+        message: "User not found.",
+        error: null,
       });
     }
 
@@ -85,8 +87,10 @@ export const login = async (req, res, next) => {
 
     if (!validPassword) {
       return res.status(404).json({
+        status: 404,
+        data: null,
         message: "Wrong password!",
-        success: false
+        error: null,
       });
     }
 
@@ -104,36 +108,38 @@ export const login = async (req, res, next) => {
       })
       .status(200)
       .json({
+        status: 200,
         message: "Login Successful",
-        success: true,
         data: {
           token,
         },
-        rest,
+        error: null,
       });
   } catch (error) {
     next(error);
   }
 };
 
+export const logout = async (req, res, next) => {
+  try {
+    res.cookie("access_token", "", {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    });
 
-export const logout = async(req, res, next) => {
-    try {
-        res.cookie('access_token',"", {
-            httpOnly: true,
-            expires: new Date(Date.now()),
-        });
-
-        res.status(200).json({
-            message: 'User logged out successfully!',
-            success: true
-        })
-
-    } catch (error) {
-        next(error);
-        return res.status(400).json({
-            message: 'Bad Request',
-            success: false
-        })
-    }
-}
+    res.status(200).json({
+      status: 200,
+      data: null,
+      message: "User logged out successfully.",
+      error: null,
+    });
+  } catch (error) {
+    next(error);
+    return res.status(400).json({
+      status: 400,
+      data: null,
+      message: "Bad Request",
+      error: null,
+    });
+  }
+};

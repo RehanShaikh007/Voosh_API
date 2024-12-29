@@ -166,10 +166,10 @@ export const removeFavorite = async (req, res, next) => {
   } catch (error) {
     next(error);
     return res.status(400).json({
-        status: 400,
-        data: null,
-        message: "Bad Request",
-        error: error.message,
-      });
+      status: 400,
+      data: null,
+      message: "Bad Request",
+      error: error.message,
+    });
   }
 };

@@ -71,14 +71,13 @@ export const getAllArtists = async (req, res, next) => {
   }
 };
 
+export const getArtistById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
-export const getArtistById = async(req, res, next) => {
-   try {
-     const {id} = req.params;
-     
-     const artist = await Artist.findOne({ artist_id: id });
+    const artist = await Artist.findOne({ artist_id: id });
 
-     if (!artist) {
+    if (!artist) {
       return res.status(404).json({
         status: 404,
         data: null,
@@ -93,19 +92,14 @@ export const getArtistById = async(req, res, next) => {
       message: "Artist retrieved successfully",
       error: null,
     });
+  } catch (error) {}
+};
 
+export const updateArtist = async (req, res, next) => {
+  const { id } = req.params;
+  const { name, grammy, hidden } = req.body;
 
-   } catch (error) {
-    
-   }
-}
-
-
-export const updateArtist = async(req, res, next) => {
-   const {id} = req.params;
-   const {name, grammy, hidden} = req.body;
-
-   if (!name && grammy === undefined && hidden === undefined) {
+  if (!name && grammy === undefined && hidden === undefined) {
     return res.status(400).json({
       status: 400,
       data: null,
@@ -138,18 +132,15 @@ export const updateArtist = async(req, res, next) => {
       message: "Artist updated successfully.",
       error: null,
     });
-
   } catch (error) {
     next(error);
   }
+};
 
-}
+export const deleteArtist = async (req, res, next) => {
+  const { id } = req.params;
 
-export const deleteArtist = async(req, res, next) => {
-   const {id} = req.params;
-
-   try {
-
+  try {
     const artist = await Artist.findOne({ artist_id: id });
 
     if (!artist) {
@@ -163,7 +154,6 @@ export const deleteArtist = async(req, res, next) => {
 
     await Artist.deleteOne({ artist_id: id });
 
-
     return res.status(200).json({
       status: 200,
       data: {
@@ -172,14 +162,13 @@ export const deleteArtist = async(req, res, next) => {
       message: `Artist: ${artist.name} deleted successfully.`,
       error: null,
     });
-    
-   } catch (error) {
-      next(error);
-      return res.status(400).json({
-        status: 400,
-        data: null,
-        message: "Bad Request",
-        error: null,
-      });
-   }
-}
+  } catch (error) {
+    next(error);
+    return res.status(400).json({
+      status: 400,
+      data: null,
+      message: "Bad Request",
+      error: null,
+    });
+  }
+};

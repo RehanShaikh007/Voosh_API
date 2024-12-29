@@ -1,4 +1,3 @@
-import { errorHandler } from "./error.js";
 import jwt from "jsonwebtoken";
 
 export const verifyToken = (req, res, next) => {
@@ -14,10 +13,16 @@ export const verifyToken = (req, res, next) => {
     });
   }
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return next(errorHandler(403, "Forbidden: Invalid Token"));
+    if (err)
+      return res.status(403).json({
+        status: 403,
+        data: null,
+        message: "Forbidden Access/Operation not allowed.",
+        error: null,
+      });
 
-    console.log('Decoded token:', user);
+    console.log("Decoded token:", user);
     req.user = { user_id: user.id, role: user.role };
     next();
   });
-}
+};
